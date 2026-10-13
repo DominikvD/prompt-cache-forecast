@@ -1,0 +1,22 @@
+{
+  "name": "cache-weather",
+  "version": "0.1.0",
+  "author": { "name": "d.mundil" },
+  "description": "Token Weather plus Prompt-Cache: Kontextfüllung und darunter, wie viele Tokens gerade im Prompt-Cache liegen und wann er abläuft.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "ttl": {
+      "type": "string",
+      "title": "Cache-TTL",
+      "description": "Lebensdauer des Prompt-Caches. auto: beginnt bei 5m und lernt 1h, sobald ein Cache-Treffer nach mehr als 5 Minuten Pause das belegt.",
+      "default": "1h",
+      "options": ["auto", "5m", "1h"]
+    },
+    "warnSeconds": {
+      "type": "number",
+      "title": "Vorwarnung (Sekunden)",
+      "description": "Toast so viele Sekunden vor Ablauf, wenn die Session gerade nichts tut. 0 schaltet ihn ab.",
+      "default": 60
+    }
+  }
+}
