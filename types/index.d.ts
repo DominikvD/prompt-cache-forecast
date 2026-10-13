@@ -1,5 +1,12 @@
 /** One context reading after a main-loop turn, as token-weather keeps it. */
-export type Reading = { tokens: number; window: number; percent: number }
+export type Reading = {
+  tokens: number
+  /** The limit the percentage is of: the auto-compact window when one is set, else the model's. */
+  window: number
+  percent: number
+  /** True when `window` is a compaction window (`autoCompactWindow`) smaller than the model's. */
+  isCompactWindow: boolean
+}
 
 /** What the last main-loop request left in the prompt cache, and when. */
 export type CacheSnapshot = {

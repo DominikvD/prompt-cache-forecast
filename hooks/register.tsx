@@ -22,6 +22,7 @@ import {
   ONE_HOUR,
   cacheRow,
   clock,
+  contextLimit,
   learnTtl,
   pushReading,
   short,
@@ -198,11 +199,13 @@ async function keepTtl($: EngineInterface, ms: number, source: 'observed' | 'rep
 
 async function takeReading($: EngineInterface) {
   try {
-    const { context } = await $.session.usage()
+    // `summary` counts locally and sends no request; it carries the compaction window.
+    const { context } = await $.session.usage({ breakdown: 'summary' })
     if (!context || !context.window) return
     const tokens = context.tokens ?? 0
-    const percent = Math.round(context.percent ?? (tokens / context.window) * 100)
-    await update($, readings, list => pushReading(list, { tokens, window: context.window, percent }))
+    const limit = contextLimit(context)
+    const percent = Math.round((tokens / limit.window) * 100)
+    await update($, readings, list => pushReading(list, { tokens, percent, ...limit }))
   } catch {
     // No reading this turn; the band keeps the last one.
   }

@@ -3,7 +3,7 @@
 Eine Claude-Code-Mod, die über dem Prompt zwei Zeilen zeigt: wie voll das Kontextfenster ist (wie [token-weather](https://github.com/anthropics/claude-code-playground/tree/main/claude-code/mods/token-weather)) und wie viele Tokens gerade im Prompt-Cache liegen und wann er abläuft.
 
 ```text
- ☂  Schauer  67% Kontext  134.4k / 200k   letzte Turns ▁▂█  ▲ +98.3k letzter Turn
+ ☂  Schauer  67% bis Auto-Compact  335.2k / 500k   letzte Turns ▁▂█  ▲ +98.3k letzter Turn
  ◆ Cache  132.1k Tokens  ███████░░░  läuft ab in 42:12  · TTL 1h  · zuletzt 120k gelesen, 12.1k geschrieben
 ```
 
@@ -39,7 +39,7 @@ claude --plugin-dir ./prompt-cache-forecast
 - **Tokens im Cache:** Nach jedem Request des Haupt-Chats liest die Mod dessen Verbrauch. Aus dem Cache gelesene plus neu geschriebene Tokens ergeben, was jetzt im Cache liegt.
 - **Ablauf:** Zeitpunkt des letzten Requests plus TTL; jeder Treffer startet die Frist neu. Der Server meldet den Ablauf nicht, deshalb rechnet die Mod ihn aus und zählt jede Sekunde herunter. Der Balken leert sich und wechselt von grün über gelb nach rot.
 - **Vorwarnung:** `warnSeconds` (Standard 60) Sekunden vor Ablauf kommt ein Toast, wenn Claude gerade nicht arbeitet.
-- **Kontext:** wie token-weather, aus `$.session.usage()` nach jedem Turn.
+- **Kontext:** wie token-weather nach jedem Turn, aber gemessen am Limit, das wirklich gilt: Ist ein Auto-Compact-Fenster gesetzt (`autoCompactWindow` in den Settings oder `CLAUDE_CODE_AUTO_COMPACT_WINDOW`) und kleiner als das Fenster des Modells, rechnet die Mod damit und schreibt „bis Auto-Compact“ statt „Kontext“. Ohne ein solches Fenster zählt das volle Modellfenster. Den Wert liest sie aus der Kontext-Aufschlüsselung, wie `/context` sie zeigt; dafür wird keine Anfrage gesendet.
 
 ## Einstellungen
 

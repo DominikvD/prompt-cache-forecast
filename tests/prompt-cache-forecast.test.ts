@@ -2,7 +2,7 @@ import { describe, expect, mock, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 import type { Engine } from 'claude-code/testing'
 
-import { FIVE_MINUTES, ONE_HOUR, cacheRow, clock, learnTtl } from '../hooks/cache'
+import { FIVE_MINUTES, ONE_HOUR, cacheRow, clock, contextLimit, learnTtl } from '../hooks/cache'
 
 const START = 1_700_000_000_000
 
@@ -19,7 +19,9 @@ const BAND = {
 } as const
 
 /** Answers what the plugin asks beneath it: a clock, a store, usage, toasts, and one request's usage. */
-function world(on: On, cached: { read: number; written: number }) {
+type Context = { tokens: number; window: number; compactWindow?: number }
+
+function world(on: On, cached: { read: number; written: number }, context: Context = { tokens: 60_000, window: 200_000 }) {
   const time = mock.clock(on, { now: START })
   mock.store(on)
   const toasts: string[] = []
@@ -27,13 +29,21 @@ function world(on: On, cached: { read: number; written: number }) {
     toasts.push(e.text)
     return { value: undefined }
   })
-  on('session.usage', () => ({
-    value: {
-      startedAt: START,
-      context: { tokens: 60_000, window: 200_000, percent: 30 },
-      rateLimits: [],
-    },
-  }))
+  on('session.usage', ($, e) => {
+    // Only the field the plugin reads; the kit hands the answer on as given.
+    const breakdown =
+      e.breakdown && context.compactWindow
+        ? ({ rawMaxTokens: context.compactWindow, autocompactSource: 'settings' } as never)
+        : undefined
+    const percent = Math.round((context.tokens / context.window) * 100)
+    return {
+      value: {
+        startedAt: START,
+        context: { tokens: context.tokens, window: context.window, percent, breakdown },
+        rateLimits: [],
+      },
+    }
+  })
   on('session.start', () => ({ cwd: '/repo' }))
   on('turn.step', async function* (_$, e) {
     return {
@@ -75,6 +85,23 @@ describe('learnTtl', () => {
 
   test('a short gap says nothing', () => {
     expect(learnTtl(previous, 50_000, 0, 60_000)).toBeUndefined()
+  })
+})
+
+describe('contextLimit', () => {
+  test('a smaller auto-compact window is the limit', () => {
+    expect(contextLimit({ window: 1_000_000, breakdown: { rawMaxTokens: 500_000 } })).toEqual({
+      window: 500_000,
+      isCompactWindow: true,
+    })
+  })
+
+  test('without one, the model window is', () => {
+    expect(contextLimit({ window: 1_000_000 })).toEqual({ window: 1_000_000, isCompactWindow: false })
+    expect(contextLimit({ window: 200_000, breakdown: { rawMaxTokens: 200_000 } })).toEqual({
+      window: 200_000,
+      isCompactWindow: false,
+    })
   })
 })
 
@@ -135,5 +162,14 @@ test('auto learns a 1h TTL from a late cache hit', { options: { ttl: 'auto' } },
   await step($, 1)
   expect(await ui.find({ type: 'Text', text: /TTL 1h$/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /läuft ab in 1:00:00/ })).toBeDefined()
+  await ui.unmount()
+})
+
+test('the weather row measures against autoCompactWindow, not the 1M window', async ($, on) => {
+  world(on, { read: 0, written: 0 }, { tokens: 200_000, window: 1_000_000, compactWindow: 500_000 })
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  const ui = await $.ui.mount({ plugin: 'prompt-cache-forecast', surface: 'desktop', ...BAND })
+  expect(await ui.find({ type: 'Text', text: /40% bis Auto-Compact/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /200k \/ 500k/ })).toBeDefined()
   await ui.unmount()
 })

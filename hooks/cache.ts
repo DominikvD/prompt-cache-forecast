@@ -42,6 +42,20 @@ export function ttlLabel(ms: number): string {
   return ms >= ONE_HOUR ? '1h' : '5m'
 }
 
+/**
+ * The limit a reading is measured against: the compaction window the session
+ * resolved (`autoCompactWindow`, `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, the
+ * account) when it is smaller than the model's window, as /context shows it.
+ */
+export function contextLimit(context: {
+  window: number
+  breakdown?: { rawMaxTokens: number }
+}): { window: number; isCompactWindow: boolean } {
+  const compact = context.breakdown?.rawMaxTokens ?? 0
+  if (compact > 0 && compact < context.window) return { window: compact, isCompactWindow: true }
+  return { window: context.window, isCompactWindow: false }
+}
+
 /** Appends a reading, keeps the last HISTORY, drops the empty one taken before any response. */
 export function pushReading(list: readonly Reading[], reading: Reading): Reading[] {
   return [...list.filter(one => one.tokens > 0), reading].slice(-HISTORY)
@@ -73,7 +87,7 @@ export function weatherRow(readings: readonly Reading[], columns: number): Segme
   const f = forecastFor(now.percent)
   const row: Segment[] = [
     { text: `${f.icon}  ${f.word}`, color: f.color, bold: true },
-    { text: `  ${now.percent}% Kontext` },
+    { text: `  ${now.percent}% ${now.isCompactWindow ? 'bis Auto-Compact' : 'Kontext'}` },
     { text: `  ${short(now.tokens)} / ${short(now.window)}`, dimColor: true },
   ]
   if (columns >= 60) {
