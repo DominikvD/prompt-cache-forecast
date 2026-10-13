@@ -2,6 +2,8 @@
   "name": "prompt-cache-forecast",
   "version": "0.1.0",
   "author": { "name": "d.mundil" },
+  "license": "Apache-2.0",
+  "repository": "https://github.com/DominikvD/prompt-cache-forecast",
   "description": "Token Weather plus Prompt-Cache: Kontextfüllung und darunter, wie viele Tokens gerade im Prompt-Cache liegen und wann er abläuft.",
   "types": "./types/index.d.ts",
   "userConfig": {

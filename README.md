@@ -70,3 +70,7 @@ Die Typen legt Claude Code beim Laden selbst unter `.claude-plugin/types/` ab (n
 ## Herkunft
 
 Die Kontextzeile (Wettersymbole, Verlaufsdiagramm, Zahlenformat) ist aus [token-weather](https://github.com/anthropics/claude-code-playground/tree/main/claude-code/mods/token-weather) übernommen und angepasst: Copyright 2026 Anthropic PBC, lizenziert unter Apache-2.0.
+
+## Lizenz
+
+Apache-2.0, siehe [LICENSE](LICENSE).
