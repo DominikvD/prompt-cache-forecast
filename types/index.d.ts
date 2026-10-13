@@ -21,7 +21,7 @@ export type CacheTtl = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'cache-weather': {
+    'prompt-cache-forecast': {
       readings: Reading[]
       cache: CacheSnapshot | null
       ttl: CacheTtl

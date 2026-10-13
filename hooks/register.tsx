@@ -1,4 +1,4 @@
-// Cache Weather: token-weather's context forecast, plus a second row for the
+// Prompt Cache Forecast: token-weather's context forecast, plus a second row for the
 // prompt cache: how many tokens the last main-loop request left cached, and a
 // countdown to when that entry lapses.
 //
@@ -30,13 +30,13 @@ import {
 } from './cache'
 import type { Segment } from './cache'
 
-const readings = atom({ plugin: 'cache-weather', key: 'readings' } as const, [])
-const cache = atom({ plugin: 'cache-weather', key: 'cache' } as const, null)
-const ttl = atom({ plugin: 'cache-weather', key: 'ttl' } as const, {
+const readings = atom({ plugin: 'prompt-cache-forecast', key: 'readings' } as const, [])
+const cache = atom({ plugin: 'prompt-cache-forecast', key: 'cache' } as const, null)
+const ttl = atom({ plugin: 'prompt-cache-forecast', key: 'ttl' } as const, {
   ms: FIVE_MINUTES,
   source: 'assumed',
 })
-const now = atom({ plugin: 'cache-weather', key: 'now' } as const, 0)
+const now = atom({ plugin: 'prompt-cache-forecast', key: 'now' } as const, 0)
 
 /** Where an observed or reported TTL is kept across sessions. */
 const STORED_TTL = 'ttl'

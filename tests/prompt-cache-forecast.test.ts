@@ -107,7 +107,7 @@ test('the band shows the cache and counts down on every surface', { options: { t
   await step($, 0)
 
   for (const surface of ['terminal', 'desktop'] as const) {
-    const ui = await $.ui.mount({ plugin: 'cache-weather', surface, ...BAND })
+    const ui = await $.ui.mount({ plugin: 'prompt-cache-forecast', surface, ...BAND })
     expect(await ui.find({ type: 'Text', text: /30% Kontext/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /42k Tokens/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /läuft ab in 5:00/ })).toBeDefined()
@@ -115,7 +115,7 @@ test('the band shows the cache and counts down on every surface', { options: { t
   }
 
   await time.advance(4 * 60_000 + 30_000)
-  const ui = await $.ui.mount({ plugin: 'cache-weather', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'prompt-cache-forecast', surface: 'terminal', ...BAND })
   expect(await ui.find({ type: 'Text', text: /läuft ab in 0:30/ })).toBeDefined()
   expect(toasts.length).toBe(1)
 
@@ -128,7 +128,7 @@ test('auto learns a 1h TTL from a late cache hit', { options: { ttl: 'auto' } },
   const { time } = world(on, { read: 40_000, written: 0 })
   await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
   await step($, 0)
-  const ui = await $.ui.mount({ plugin: 'cache-weather', surface: 'terminal', ...BAND })
+  const ui = await $.ui.mount({ plugin: 'prompt-cache-forecast', surface: 'terminal', ...BAND })
   expect(await ui.find({ type: 'Text', text: /TTL 5m\?/ })).toBeDefined()
 
   await time.advance(20 * 60_000)

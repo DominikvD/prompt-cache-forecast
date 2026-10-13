@@ -1,4 +1,4 @@
-# Cache Weather
+# Prompt Cache Forecast
 
 Eine Claude-Code-Mod, die über dem Prompt zwei Zeilen zeigt: wie voll das Kontextfenster ist (wie [token-weather](https://github.com/anthropics/claude-code-playground/tree/main/claude-code/mods/token-weather)) und wie viele Tokens gerade im Prompt-Cache liegen und wann er abläuft.
 
@@ -13,12 +13,17 @@ Ist der Cache abgelaufen:
  ◇ Cache kalt  132.1k Tokens, abgelaufen vor 3 min  · der nächste Request schreibt sie neu · TTL 1h
 ```
 
+## Warum der Name
+
+- **Prompt Cache** ist der Fachbegriff für das, was die Mod misst: das Prompt-Caching der Claude-API. „Cache“ allein könnte jeder Cache sein.
+- **Forecast** sagt, was die Mod tut: Sie sagt voraus, wann der Cache abläuft. Gleichzeitig bleibt das Wetterbild von token-weather erkennbar, auf dem die Mod aufbaut und dessen Kontext-Vorhersage sie in der ersten Zeile weiter zeigt.
+
 ## Installation
 
 In einer Claude-Code-Session im Terminal:
 
 ```
-/plugin install cache-weather --marketplace DominikvD/cache-weather
+/plugin install prompt-cache-forecast --marketplace DominikvD/prompt-cache-forecast
 ```
 
 `y` bestätigt den Marketplace, danach den Scope wählen (User-Scope gilt für alle Sessions).
@@ -26,7 +31,7 @@ In einer Claude-Code-Session im Terminal:
 Zum Ausprobieren aus einem lokalen Klon:
 
 ```bash
-claude --plugin-dir ./cache-weather
+claude --plugin-dir ./prompt-cache-forecast
 ```
 
 ## So rechnet die Mod
@@ -43,14 +48,14 @@ claude --plugin-dir ./cache-weather
 | `ttl` | `1h`, `5m`, `auto` | `1h` | Lebensdauer des Caches. `auto` beginnt bei 5m und stellt auf 1h um, sobald ein Cache-Treffer nach mehr als 5 Minuten Pause das belegt; auch Modellwechsel und fortgesetzte Sessions werden ausgewertet. |
 | `warnSeconds` | Zahl | `60` | Vorwarnung in Sekunden; `0` schaltet sie ab. |
 
-Gesetzt werden sie im Config-Menü oder in `settings.json` unter `pluginConfigs["cache-weather"].options`.
+Gesetzt werden sie im Config-Menü oder in `settings.json` unter `pluginConfigs["prompt-cache-forecast"].options`.
 
 ## Grenzen
 
 - Gezählt wird nur der Cache des Haupt-Chats; Subagents haben eigene Caches.
 - Läuft ein einzelnes Tool länger als die TTL, kann der Cache mitten im Turn ablaufen; die Anzeige zeigt das korrekt.
 - Bei einer fortgesetzten Session ist der erste Wert eine Schätzung (`~`), bis der erste echte Request kommt.
-- Eine Mod pro Band: token-weather und cache-weather belegen dieselbe Zeile über dem Prompt. cache-weather enthält die Wetterzeile bereits, token-weather also deaktivieren.
+- Eine Mod pro Band: token-weather und prompt-cache-forecast belegen dieselbe Zeile über dem Prompt. prompt-cache-forecast enthält die Wetterzeile bereits, token-weather also deaktivieren.
 - Angezeigt wird im Terminal und in der Desktop-App.
 
 ## Entwicklung

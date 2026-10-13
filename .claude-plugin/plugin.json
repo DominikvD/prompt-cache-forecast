@@ -1,5 +1,5 @@
 {
-  "name": "cache-weather",
+  "name": "prompt-cache-forecast",
   "version": "0.1.0",
   "author": { "name": "d.mundil" },
   "description": "Token Weather plus Prompt-Cache: Kontextfüllung und darunter, wie viele Tokens gerade im Prompt-Cache liegen und wann er abläuft.",

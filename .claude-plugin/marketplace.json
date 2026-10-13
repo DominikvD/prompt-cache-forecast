@@ -1,10 +1,10 @@
 {
-  "name": "cache-weather",
+  "name": "prompt-cache-forecast",
   "owner": { "name": "d.mundil" },
   "metadata": { "description": "Claude-Code-Mod: Kontext- und Prompt-Cache-Anzeige über dem Prompt." },
   "plugins": [
     {
-      "name": "cache-weather",
+      "name": "prompt-cache-forecast",
       "source": "./",
       "description": "Kontextfüllung und Prompt-Cache über dem Prompt: wie viele Tokens im Cache liegen und wann er abläuft."
     }
